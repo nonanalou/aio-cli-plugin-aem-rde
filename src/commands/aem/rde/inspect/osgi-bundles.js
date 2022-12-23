@@ -11,37 +11,37 @@
  */
 'use strict';
 
-const { BaseCommand, cli, commonFlags } = require('../../../lib/base-command');
+const { BaseCommand, cli, commonFlags } = require('../../../../lib/base-command');
 
-class SlingRequestsCommand extends BaseCommand {
+class OsgiBundlesCommand extends BaseCommand {
   async run() {
-    const { args, flags } = await this.parse(SlingRequestsCommand);
+    const { args, flags } = await this.parse(OsgiBundlesCommand);
     try {
       if (!args.id) {
         let params = {};
+        params.scope = flags.scope;
         params.filter = flags.include;
 
         let response = await this.withCloudSdk((cloudSdkAPI) =>
-          cloudSdkAPI.getSlingRequests(flags.target, params)
+          cloudSdkAPI.getOsgiBundles(flags.target, params)
         );
         if (response.status === 200) {
           let json = await response.json();
-          cli.log('- Sling Requests: ');
-          json.items.forEach((slingRequests) => {
-            cli.log(slingRequests);
+          cli.log('- Osgi Bundles: ');
+          json.items.forEach((osgiBundle) => {
+            cli.log(osgiBundle);
           });
         } else {
           cli.log(`Error: ${response.status} - ${response.statusText}`);
         }
       } else {
         let response = await this.withCloudSdk((cloudSdkAPI) =>
-          cloudSdkAPI.getSlingRequest(flags.target, args.id)
+          cloudSdkAPI.getOsgiBundle(flags.target, args.id)
         );
-
         if (response.status === 200) {
-          let slingRequest = await response.json();
-          cli.log(`- Sling Request "${args.id}": `);
-          cli.log(slingRequest);
+          let osgiBundle = await response.json();
+          cli.log(`- Osgi Bundle "${args.id}": `);
+          cli.log(osgiBundle);
         } else {
           cli.log(`Error: ${response.status} - ${response.statusText}`);
         }
@@ -52,19 +52,20 @@ class SlingRequestsCommand extends BaseCommand {
   }
 }
 
-Object.assign(SlingRequestsCommand, {
+Object.assign(OsgiBundlesCommand, {
   description:
-    'Get the list of sling-requests for the target of a rapid development environment.',
+    'Get the list of osgi-bundles for the target of a rapid development environment.',
   args: [
     {
       name: 'id',
-      description: 'The id of the sling-request to get.',
+      description: 'The id of the osgi-bundle to get.',
     },
   ],
   flags: {
     target: commonFlags.target,
+    scope: commonFlags.scope,
     include: commonFlags.include,
   },
 });
 
-module.exports = SlingRequestsCommand;
+module.exports = OsgiBundlesCommand;

@@ -16,7 +16,7 @@ const {
   cli,
   Flags,
   commonFlags,
-} = require('../../../../lib/base-command');
+} = require('../../../../../lib/base-command');
 
 class EnableRequestLogsCommand extends BaseCommand {
   async run() {

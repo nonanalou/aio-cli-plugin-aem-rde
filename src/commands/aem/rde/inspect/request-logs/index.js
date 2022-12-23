@@ -11,37 +11,41 @@
  */
 'use strict';
 
-const { BaseCommand, cli, commonFlags } = require('../../../lib/base-command');
+const {
+  BaseCommand,
+  cli,
+  commonFlags,
+} = require('../../../../../lib/base-command');
 
-class OsgiConfigurationsCommand extends BaseCommand {
+class RequestLogsCommand extends BaseCommand {
   async run() {
-    const { args, flags } = await this.parse(OsgiConfigurationsCommand);
+    const { args, flags } = await this.parse(RequestLogsCommand);
     try {
-      if (!args.pId) {
+      if (!args.id) {
         let params = {};
-        params.scope = flags.scope;
         params.filter = flags.include;
 
         let response = await this.withCloudSdk((cloudSdkAPI) =>
-          cloudSdkAPI.getOsgiConfigurations(flags.target, params)
+          cloudSdkAPI.getRequestLogs(flags.target, params)
         );
         if (response.status === 200) {
           let json = await response.json();
-          cli.log('- Osgi Configurations: ');
-          json.items.forEach((osgiConfiguration) => {
-            cli.log(osgiConfiguration);
+          cli.log('- Request Logs: ');
+          json.items.forEach((requestLog) => {
+            cli.log(json);
+            cli.log(requestLog);
           });
         } else {
           cli.log(`Error: ${response.status} - ${response.statusText}`);
         }
       } else {
         let response = await this.withCloudSdk((cloudSdkAPI) =>
-          cloudSdkAPI.getOsgiConfiguration(flags.target, args.pId)
+          cloudSdkAPI.getRequestLog(flags.target, args.id)
         );
         if (response.status === 200) {
-          let osgiConfiguration = await response.json();
-          cli.log(`- Osgi Configuration "${args.pId}": `);
-          cli.log(osgiConfiguration);
+          let requestLog = await response.json();
+          cli.log(`- Request Log "${args.id}": `);
+          cli.log(requestLog);
         } else {
           cli.log(`Error: ${response.status} - ${response.statusText}`);
         }
@@ -52,20 +56,19 @@ class OsgiConfigurationsCommand extends BaseCommand {
   }
 }
 
-Object.assign(OsgiConfigurationsCommand, {
+Object.assign(RequestLogsCommand, {
   description:
-    'Get the list of osgi-configurations for the target of a rapid development environment.',
+    'Get the list of request-logs for the target of a rapid development environment.',
   args: [
     {
-      name: 'pId',
-      description: 'The PID of the osgi-configuration to get.',
+      name: 'id',
+      description: 'The id of the request-log to get.',
     },
   ],
   flags: {
     target: commonFlags.target,
-    scope: commonFlags.scope,
     include: commonFlags.include,
   },
 });
 
-module.exports = OsgiConfigurationsCommand;
+module.exports = RequestLogsCommand;

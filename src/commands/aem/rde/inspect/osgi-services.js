@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const { BaseCommand, cli, commonFlags } = require('../../../lib/base-command');
+const { BaseCommand, cli, commonFlags } = require('../../../../lib/base-command');
 
 class OsgiServicesCommand extends BaseCommand {
   async run() {
